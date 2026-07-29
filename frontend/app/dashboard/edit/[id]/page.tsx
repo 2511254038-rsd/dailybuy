@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import CardForm from "@/components/CardForm";
-import { api } from "@/lib/api"; // public client (reading one card)
+import { api } from "@/services/api"; // public client (reading one card)
 
 type Card = {
   id: string;

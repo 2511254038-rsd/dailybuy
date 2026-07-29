@@ -1,27 +1,25 @@
-import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { AuthProvider } from "@/hooks/useAuth";
+import { Toaster } from "react-hot-toast";
+import Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { ReactNode } from "react";
 
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-
-export const metadata: Metadata = {
-  title: "DevBlog — Full Stack",
-  description: "A blog built with Next.js + Node.js, connected with axios.",
+export const metadata = {
+  title: "DailyBuy",
+  description: "Your everyday online store",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} min-h-screen flex flex-col`}>
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body>
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <Toaster position="top-center" />
+        </AuthProvider>
       </body>
     </html>
   );

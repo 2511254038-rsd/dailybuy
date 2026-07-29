@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import InputField from "./InputField";
+import InputField from "./common/Input";
 import TextareaField from "./TextareaField";
-import Button from "./Button";
-import { authApi } from "@/lib/api"; // protected client
+import Button from "./common/Button";
+import { authApi } from "@/services/api"; // protected client
 
 type Card = {
   id: string;

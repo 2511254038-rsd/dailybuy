@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BlogCard from "@/components/BlogCard";
-import Button from "@/components/Button";
-import { authApi } from "@/lib/api"; // protected client
+import Button from "@/components/common/Button";
+import { authApi } from "@/services/api"; // protected client
 
 type Card = {
   id: string;

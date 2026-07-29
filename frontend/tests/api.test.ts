@@ -13,13 +13,13 @@ beforeAll(() => {
 
 describe("axios clients (lib/api.ts)", () => {
   it("api is public (no credentials) and uses the API base URL", async () => {
-    const { api } = await import("@/lib/api");
+    const { api } = await import("@/services/api");
     expect(api.defaults.baseURL).toBe("http://localhost:5000");
     expect(api.defaults.withCredentials).toBeFalsy(); // public → no cookie
   });
 
   it("authApi is protected (sends the cookie)", async () => {
-    const { authApi } = await import("@/lib/api");
+    const { authApi } = await import("@/services/api");
     expect(authApi.defaults.baseURL).toBe("http://localhost:5000");
     expect(authApi.defaults.withCredentials).toBe(true); // protected → cookie
   });

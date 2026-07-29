@@ -2,18 +2,19 @@ import ProductGrid from "@/components/product/ProductGrid";
 import { Product } from "@/types";
 
 async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=8`, { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+    cache: "no-store",
+  });
   const json = await res.json();
   return json.items;
 }
 
-export default async function HomePage() {
+export default async function ProductsPage() {
   const products = await fetchProducts();
 
   return (
     <div className="px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-6">Welcome to DailyBuy</h1>
-      <h2 className="text-lg font-medium mb-4">Featured products</h2>
+      <h1 className="text-xl font-semibold mb-6">All products</h1>
       <ProductGrid products={products} />
     </div>
   );
