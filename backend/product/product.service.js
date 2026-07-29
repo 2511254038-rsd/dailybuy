@@ -21,15 +21,27 @@ export const createProduct = async (data) => {
   return Product.create({ ...data, slug });
 };
 
-export const listProducts = async ({ category, search, page = 1, limit = 12 }) => {
+export const listProducts = async ({ category, search, minPrice, maxPrice, sort, page = 1, limit = 12 }) => {
   const query = { isActive: true };
   if (category) query.category = category;
   if (search) query.$text = { $search: search };
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = Number(minPrice);
+    if (maxPrice) query.price.$lte = Number(maxPrice);
+  }
+
+  const sortMap = {
+    newest: { createdAt: -1 },
+    priceAsc: { price: 1 },
+    priceDesc: { price: -1 },
+  };
+  const sortOption = sortMap[sort] || sortMap.newest;
 
   const skip = (Number(page) - 1) * Number(limit);
 
   const [items, total] = await Promise.all([
-    Product.find(query).skip(skip).limit(Number(limit)).sort({ createdAt: -1 }),
+    Product.find(query).sort(sortOption).skip(skip).limit(Number(limit)),
     Product.countDocuments(query),
   ]);
 
