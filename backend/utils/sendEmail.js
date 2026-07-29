@@ -2,8 +2,9 @@ import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  port: 465,
+  secure: true,
+  family: 4, // force IPv4 — Render's outbound IPv6 is unreliable
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -12,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async ({ to, subject, html }) => {
   await transporter.sendMail({
-    from: `"KenaKata" <${process.env.SMTP_USER}>`,
+    from: `"dailybuy" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,
