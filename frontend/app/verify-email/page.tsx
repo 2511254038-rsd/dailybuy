@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import * as authService from "@/services/authService";
 
 type Status = "verifying" | "success" | "error";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("verifying");
@@ -33,5 +33,13 @@ export default function VerifyEmailPage() {
       )}
       {status === "error" && <p className="text-red-500">Invalid or expired link.</p>}
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<p className="text-center mt-24">Loading...</p>}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
