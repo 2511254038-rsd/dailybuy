@@ -20,12 +20,18 @@ export const registerUser = async ({ name, email, password }) => {
     verifyTokenExpires: expires,
   });
 
-  const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
-  await sendEmail({
-    to: user.email,
-    subject: "Verify your KenaKata account",
-    html: verifyEmailTemplate(user.name, verifyUrl),
-  });
+  // Email failure should NEVER crash a successful registration —
+  // the account already exists and the user can hit /resend-verification later.
+  try {
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your KenaKata account",
+      html: verifyEmailTemplate(user.name, verifyUrl),
+    });
+  } catch (emailErr) {
+    console.error("Registration email failed to send:", emailErr.message);
+  }
 
   return { id: user._id, email: user.email };
 };
@@ -55,12 +61,17 @@ export const resendVerification = async (email) => {
   user.verifyTokenExpires = expires;
   await user.save();
 
-  const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
-  await sendEmail({
-    to: user.email,
-    subject: "Verify your KenaKata account",
-    html: verifyEmailTemplate(user.name, verifyUrl),
-  });
+  try {
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your KenaKata account",
+      html: verifyEmailTemplate(user.name, verifyUrl),
+    });
+  } catch (emailErr) {
+    console.error("Resend verification email failed:", emailErr.message);
+    throw new AppError("Could not send email right now — check SMTP settings and try again", 502);
+  }
 };
 
 export const loginUser = async ({ email, password }) => {
@@ -75,15 +86,15 @@ export const loginUser = async ({ email, password }) => {
   }
 
   if (user.isDisabled) {
-  throw new AppError("This account has been disabled", 403);
-}
+    throw new AppError("This account has been disabled", 403);
+  }
 
   const token = generateAuthToken({
-  id: user._id,
-  role: user.role,
-  email: user.email,
-  name: user.name,
-});
+    id: user._id,
+    role: user.role,
+    email: user.email,
+    name: user.name,
+  });
 
   return {
     token,
@@ -98,13 +109,24 @@ export const getProfile = async (userId) => {
 };
 
 export const updateProfile = async (userId, updates) => {
-  const user = await User.findByIdAndUpdate(userId, updates, {
-    new: true,
-    runValidators: true,
-  }).select("-password -verifyToken -verifyTokenExpires");
+  const user = await User.findById(userId);
   if (!user) throw new AppError("User not found", 404);
-  return user;
+
+  // Merge address instead of replacing, so a partial update
+  // (e.g. just city) doesn't wipe the other address fields.
+  if (updates.address) {
+    user.address = { ...user.address.toObject(), ...updates.address };
+    delete updates.address;
+  }
+
+  Object.assign(user, updates);
+  await user.save();
+
+  const { password, verifyToken, verifyTokenExpires, ...safeUser } = user.toObject();
+  return safeUser;
 };
+
+// --- admin ---
 
 export const listCustomers = async () => {
   return User.find({ role: "customer" }).select("-password -verifyToken -verifyTokenExpires");
