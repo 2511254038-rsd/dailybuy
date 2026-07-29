@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingCart, Heart, User, LogOut } from "lucide-react";
+import { Search, ShoppingCart, Heart, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
+import Avatar from "@/components/common/Avatar";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -57,60 +58,43 @@ export default function Navbar() {
             )}
           </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setMenuOpen((v) => !v)}
-              className="p-2 hover:bg-gray-50 rounded-full flex items-center gap-1"
-              aria-label="Account"
-            >
-              <User size={20} />
-            </button>
+          {user ? (
+            <div className="relative" onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
+              <button className="p-1 rounded-full hover:bg-gray-50" aria-label="Account">
+                <Avatar name={user.name} avatar={user.avatar} size={32} />
+              </button>
 
-            {menuOpen && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                <div className="absolute right-0 top-full mt-1 w-44 bg-white border rounded-lg shadow-lg z-20 py-1">
-                  {user ? (
-                    <>
-                      <div className="px-3 py-2 text-sm border-b">
-                        <p className="font-medium truncate">{user.name}</p>
-                      </div>
-                      <Link href="/profile" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm hover:bg-gray-50">
-                        My Profile
-                      </Link>
-                      {user.role === "admin" && (
-                        <Link href="/admin/products" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm hover:bg-gray-50">
-                          Admin Panel
-                        </Link>
-                      )}
-                      <button
-                        onClick={() => {
-                          logout();
-                          setMenuOpen(false);
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                        <LogOut size={14} /> Logout
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link href="/login" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm hover:bg-gray-50">
-                        Login
-                      </Link>
-                      <Link href="/register" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm hover:bg-gray-50">
-                        Sign up
-                      </Link>
-                    </>
+              {menuOpen && (
+                <div className="absolute right-0 top-full w-48 bg-white border rounded-lg shadow-lg z-20 py-1">
+                  <div className="px-3 py-2 border-b">
+                    <p className="font-medium text-sm truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <Link href="/dashboard" className="block px-3 py-2 text-sm hover:bg-gray-50">
+                    My Profile
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link href="/admin/products" className="block px-3 py-2 text-sm hover:bg-gray-50">
+                      Admin Panel
+                    </Link>
                   )}
+                  <button
+                    onClick={() => logout()}
+                    className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-50"
+                  >
+                    Sign Out
+                  </button>
                 </div>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className="p-2 hover:bg-gray-50 rounded-full" aria-label="Sign in">
+              <UserIcon size={20} />
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* mobile search — full width below the main bar since it's hidden inline on small screens */}
       <form onSubmit={handleSearch} className="sm:hidden flex items-center border-t px-4 py-2">
         <Search size={18} className="text-gray-400 mr-2 shrink-0" />
         <input

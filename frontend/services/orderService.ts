@@ -9,12 +9,10 @@ export interface ShippingAddress {
   district: string;
   zip: string;
 }
-
 export interface PlaceOrderPayload {
   shippingAddress: ShippingAddress;
   paymentMethod: "cod" | "bkash" | "nagad";
 }
-
 export interface Order {
   _id: string;
   items: { title: string; price: number; quantity: number }[];
@@ -25,6 +23,13 @@ export interface Order {
   paymentStatus: string;
   orderStatus: string;
   transactionId?: string;
+}
+
+export interface OrderStats {
+  totalOrders: number;
+  activeOrders: number;
+  delivered: number;
+  totalSpent: number;
 }
 
 type OrderResponse = { success: boolean; data: Order };
@@ -47,3 +52,6 @@ export const verifyOrderPayment = (id: string) =>
 
 export const updateOrderStatus = (id: string, orderStatus: string) =>
   api.patch<OrderResponse>(`/orders/admin/${id}/status`, { orderStatus });
+
+export const getOrderStats = () =>
+   api.get<{ success: boolean; data: OrderStats }>("/orders/stats/me");
