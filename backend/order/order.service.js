@@ -121,3 +121,16 @@ export const updateOrderStatus = async (orderId, orderStatus) => {
   if (!order) throw new AppError("Order not found", 404);
   return order;
 };
+
+export const getOrderStats = async (userId) => {
+  const orders = await Order.find({ user: userId });
+
+  const totalOrders = orders.length;
+  const activeOrders = orders.filter((o) => !["delivered", "cancelled"].includes(o.orderStatus)).length;
+  const delivered = orders.filter((o) => o.orderStatus === "delivered").length;
+  const totalSpent = orders
+    .filter((o) => o.paymentStatus === "paid" || o.paymentMethod === "cod")
+    .reduce((sum, o) => sum + o.total, 0);
+
+  return { totalOrders, activeOrders, delivered, totalSpent };
+};

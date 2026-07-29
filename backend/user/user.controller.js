@@ -53,6 +53,26 @@ export const logout = async (req, res, next) => {
   res.status(200).json({ success: true, message: "Logged out" });
 };
 
+export const forgotPassword = async (req, res, next) => {
+  try {
+    await userService.requestPasswordReset(req.body.email);
+    // Always respond success-shaped, regardless of whether the email exists —
+    // prevents leaking which emails are registered.
+    res.status(200).json({ success: true, message: "If that email exists, a reset link has been sent" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    await userService.resetPassword(req.body.token, req.body.password);
+    res.status(200).json({ success: true, message: "Password reset successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getMe = async (req, res, next) => {
   try {
     const user = await userService.getProfile(req.user.id);

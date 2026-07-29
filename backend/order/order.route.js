@@ -14,6 +14,7 @@ router.get("/:id", orderController.getOrder);
 router.patch("/:id/payment", validate(submitPaymentSchema), orderController.submitPayment);
 
 // admin
+router.get("/stats/me", orderController.getStats);
 router.get("/admin/all", requireAdmin, orderController.listAll);
 router.patch("/admin/:id/verify", requireAdmin, orderController.verify);
 router.patch("/admin/:id/status", requireAdmin, validate(updateOrderStatusSchema), orderController.updateStatus);

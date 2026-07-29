@@ -64,3 +64,12 @@ export const updateStatus = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getStats = async (req, res, next) => {
+  try {
+    const stats = await orderService.getOrderStats(req.user.id);
+    res.status(200).json({ success: true, data: stats });
+  } catch (err) {
+    next(err);
+  }
+};
