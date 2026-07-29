@@ -9,19 +9,23 @@ import { Product } from "@/types";
 import ProductDetails from "@/components/product/ProductDetails";
 import Loading from "@/components/common/Loading";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { addRecentlyViewed } from "@/utils/recentlyViewed";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    productService
-      .getProductBySlug(params.id)
-      .then((res) => setProduct(res.data.data))
-      .catch(() => setProduct(null))
-      .finally(() => setLoading(false));
-  }, [params.id]);
+ useEffect(() => {
+  productService
+    .getProductBySlug(params.id)
+    .then((res) => {
+      setProduct(res.data.data);
+      addRecentlyViewed(res.data.data._id);
+    })
+    .catch(() => setProduct(null))
+    .finally(() => setLoading(false));
+}, [params.id]);
 
   const handleAddToCart = async (productId: string, quantity: number) => {
     try {

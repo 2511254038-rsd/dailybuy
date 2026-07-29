@@ -21,3 +21,6 @@ export const updateBanner = (id: string, data: Partial<Banner>) =>
 
 export const deleteBanner = (id: string) => 
     api.delete(`/banners/${id}`);
+
+export const getPublicBanners = () =>
+     api.get<{ success: boolean; data: Banner[] }>("/banners");

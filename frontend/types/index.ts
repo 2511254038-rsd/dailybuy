@@ -9,11 +9,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  phone?: string;
-  address?: Address;
+  phone: string;
   avatar?: string;
-  isDisabled: boolean;
-  // isVerified: boolean;
+  gender?: "male" | "female" | "other" | "";
+  dateOfBirth?: string;
+  rewardPoints?: number;
+  address?: Address;
   role: "customer" | "admin";
 }
 

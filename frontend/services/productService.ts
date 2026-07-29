@@ -12,6 +12,9 @@ export interface ProductListResponse {
 export interface ProductQuery {
   category?: string;
   search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: "newest" | "priceAsc" | "priceDesc";
   page?: number;
   limit?: number;
 }

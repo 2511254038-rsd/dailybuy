@@ -9,6 +9,7 @@ import OrderStatusBadge from "@/components/order/OrderStatusBadge";
 import PaymentSubmitForm from "@/components/order/PaymentSubmitForm";
 import Loading from "@/components/common/Loading";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import OrderTimeline from "@/components/order/OrderTimeline";
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
@@ -53,7 +54,7 @@ export default function OrderDetailPage() {
     <div className="px-6 py-8 max-w-lg mx-auto">
       <h1 className="text-xl font-semibold mb-1">Order #{order._id.slice(-8)}</h1>
       <div className="flex gap-2 mb-6">
-        <OrderStatusBadge status={order.orderStatus} />
+        <OrderTimeline status={order.orderStatus} />
         <OrderStatusBadge status={order.paymentStatus} />
       </div>
 

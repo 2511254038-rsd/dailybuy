@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Product } from "@/types";
+import WishlistButton from "../common/WishlistButton";
 
 export default function ProductCard({ product }: { product: Product }) {
   const price = product.discountPrice ?? product.price;
@@ -15,6 +16,11 @@ export default function ProductCard({ product }: { product: Product }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
         )}
+    
+        <div className="absolute top-1.5 right-1.5">
+          <WishlistButton productId={product._id} />
+        </div>
+
       </div>
       <h3 className="font-medium text-sm truncate">{product.title}</h3>
       <div className="flex items-center gap-2 mt-1">

@@ -1,20 +1,44 @@
-import ProductGrid from "@/components/product/ProductGrid";
+import HeroCarousel from "@/components/home/HeroCarousel";
+import CategoryStrip from "@/components/home/CategoryStrip";
+import ProductRail from "@/components/home/ProductRail";
 import { Product } from "@/types";
+import { Banner } from "@/services/bannerService";
 
-async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=8`, { cache: "no-store" });
+async function fetchProducts(params: string = ""): Promise<Product[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products${params}`, { cache: "no-store" });
   const json = await res.json();
-  return json.items;
+  return json.items || [];
+}
+
+async function fetchBanners(): Promise<Banner[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/banners`, { cache: "no-store" });
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
 }
 
 export default async function HomePage() {
-  const products = await fetchProducts();
+  const [allProducts, banners] = await Promise.all([
+    fetchProducts("?limit=24"),
+    fetchBanners(),
+  ]);
+
+  // simple client-side split for demo rails — real "deals"/"new" logic
+  // would eventually be separate backend queries (discountPrice set, sorted by createdAt, etc.)
+  const dealsProducts = allProducts.filter((p) => p.discountPrice != null && p.discountPrice < p.price);
+  const newProducts = [...allProducts].reverse();
 
   return (
-    <div className="px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-6">Welcome to DailyBuy</h1>
-      <h2 className="text-lg font-medium mb-4">Featured products</h2>
-      <ProductGrid products={products} />
+    <div className="px-4 md:px-6 py-4 space-y-8 max-w-7xl mx-auto">
+      <HeroCarousel banners={banners} />
+      <CategoryStrip />
+
+      <ProductRail title="🔥 Flash Deals" products={dealsProducts} viewAllHref="/products" />
+      <ProductRail title="🆕 Just In" products={newProducts.slice(0, 12)} viewAllHref="/products" />
+      <ProductRail title="All Products" products={allProducts} viewAllHref="/products" />
     </div>
   );
 }

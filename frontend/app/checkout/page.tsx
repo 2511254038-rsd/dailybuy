@@ -11,6 +11,8 @@ import CheckoutForm from "@/components/checkout/CheckoutForm";
 import CartSummary from "@/components/cart/CartSummary";
 import Loading from "@/components/common/Loading";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import CheckoutSteps from "@/components/checkout/CheckoutSteps";
+import CouponInput from "@/components/checkout/CouponInput";
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<Cart | null>(null);
@@ -47,12 +49,23 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="px-6 py-8 grid md:grid-cols-3 gap-8">
-      <div className="md:col-span-2">
-        <h1 className="text-xl font-semibold mb-4">Checkout</h1>
-        <CheckoutForm onSubmit={handlePlaceOrder} submitting={submitting} />
+    <div className="px-6 py-8 max-w-6xl mx-auto">
+      <CheckoutSteps current={1} />
+
+      <div className="grid md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <h1 className="text-xl font-semibold mb-4">Checkout</h1>
+          <CheckoutForm onSubmit={handlePlaceOrder} submitting={submitting} />
+        </div>
+        <div className="space-y-4">
+          <CouponInput
+            onApply={(percent) =>
+              console.log(`${percent}% off — display only, not wired to order total yet`)
+            }
+          />
+          <CartSummary items={items} />
+        </div>
       </div>
-      <CartSummary items={items} />
     </div>
   );
 }

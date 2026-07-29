@@ -4,8 +4,10 @@ import { api } from "./api";
 
 export interface RegisterPayload {
   name: string;
+  phone: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface LoginPayload {
@@ -29,6 +31,9 @@ export const registerUser = (data: RegisterPayload) =>
 export const verifyEmail = (token: string) => 
   api.get(`/users/verify-email?token=${token}`);
 
+export const resendVerification = (email: string) =>
+  api.post("/users/resend-verification", { email });
+
 export const loginUser = (data: LoginPayload) =>
   api.post<{ success: boolean; data: User }>("/users/login", data);
 
@@ -40,3 +45,10 @@ export const getProfile = () =>
 
 export const updateProfile = (data: Partial<User>) => 
   api.patch("/users/profile", data);
+
+
+export const forgotPassword = (email: string) =>
+   api.post("/users/forgot-password", { email });
+
+export const resetPassword = (token: string, password: string, confirmPassword: string) =>
+  api.post("/users/reset-password", { token, password, confirmPassword });
