@@ -66,3 +66,21 @@ export const updateMe = async (req, res, next) => {
     next(err);
   }
 };
+
+export const listCustomers = async (req, res, next) => {
+  try {
+    const customers = await userService.listCustomers();
+    res.status(200).json({ success: true, data: customers });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const disableCustomer = async (req, res, next) => {
+  try {
+    const user = await userService.setUserDisabled(req.params.id, req.body.disabled);
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+};

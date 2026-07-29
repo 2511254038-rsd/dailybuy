@@ -74,6 +74,10 @@ export const loginUser = async ({ email, password }) => {
     throw new AppError("Please verify your email before logging in", 403);
   }
 
+  if (user.isDisabled) {
+  throw new AppError("This account has been disabled", 403);
+}
+
   const token = generateAuthToken({
   id: user._id,
   role: user.role,
@@ -98,6 +102,20 @@ export const updateProfile = async (userId, updates) => {
     new: true,
     runValidators: true,
   }).select("-password -verifyToken -verifyTokenExpires");
+  if (!user) throw new AppError("User not found", 404);
+  return user;
+};
+
+export const listCustomers = async () => {
+  return User.find({ role: "customer" }).select("-password -verifyToken -verifyTokenExpires");
+};
+
+export const setUserDisabled = async (userId, disabled) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isDisabled: disabled },
+    { new: true }
+  ).select("-password -verifyToken -verifyTokenExpires");
   if (!user) throw new AppError("User not found", 404);
   return user;
 };
