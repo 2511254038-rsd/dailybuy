@@ -1,21 +1,16 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4, // force IPv4 — Render's outbound IPv6 is unreliable
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async ({ to, subject, html }) => {
-  await transporter.sendMail({
-    from: `"dailybuy" <${process.env.SMTP_USER}>`,
+  const { error } = await resend.emails.send({
+    from: "DailyBuy <onboarding@resend.dev>",
     to,
     subject,
     html,
   });
+
+  if (error) {
+    throw new Error(error.message || "Failed to send email via Resend");
+  }
 };
